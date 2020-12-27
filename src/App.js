@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import { atom, useRecoilState, selector, useRecoilValue } from "recoil";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <>
+      <TextInput />
+      <CharacterCount />
+    </>
+  );
+}
+
+const textState = atom({
+  key: "textState",
+  default: "",
+});
+
+function TextInput() {
+  const [text, setText] = useRecoilState(textState);
+
+  const onChange = (evt) => {
+    setText(evt.target.value);
+  };
+
+  return (
+    <div>
+      <input type="text" value={text} onChange={onChange} />
+      <br />
+      Echo: {text}
     </div>
   );
+}
+
+const charCounState = selector({
+  // atom을 선택
+  key: "charCountState",
+  // getter을 이용해 값을 가공
+  get: ({ get }) => {
+    const text = get(textState);
+    return text.length;
+  },
+});
+
+// ===== 값을 적용 =====
+function CharacterCount() {
+  const count = useRecoilValue(charCounState);
+
+  return <>Character Count: {count}</>;
 }
 
 export default App;
